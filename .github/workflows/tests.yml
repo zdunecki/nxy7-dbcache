@@ -34,7 +34,7 @@ jobs:
 
       - name: Run Tests
         run: |
-          go test . -v -race
+          nix develop . -c bash -c "go test . -v -race"
 
       - name: Save nix store
         uses: actions/cache/save@v3
