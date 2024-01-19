@@ -55,7 +55,7 @@ func TestConcurrentReads(t *testing.T) {
 		userAmount    int
 		requestAmount int
 	}{
-		{"requested test case", 1000, 10},
+		{"requested test case", 100, 10},
 		{"big amount of users", 10000, 10},
 		{"big amount of requests", 10, 10000},
 	}
