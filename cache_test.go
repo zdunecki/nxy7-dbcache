@@ -1,8 +1,7 @@
 package livesessiondbcache_test
 
 import (
-	"fmt"
-	livesessiondbcache "golang-template"
+	"cache"
 	"sync"
 	"testing"
 
@@ -10,7 +9,7 @@ import (
 )
 
 func TestCanCacheData(t *testing.T) {
-	dataSource := MakeFakeDataSource(10)
+	dataSource := MakeFakeDataSource(10, false)
 	testCache := livesessiondbcache.MakeCache[User](dataSource)
 
 	keys := dataSource.GetAllKeys()
@@ -21,7 +20,6 @@ func TestCanCacheData(t *testing.T) {
 		u, err := testCache.Get(first)
 		assert.Nil(t, err)
 		assert.Equal(t, user, *u)
-		fmt.Println(user, u)
 	})
 
 	t.Run("makes one request per user", func(t *testing.T) {
@@ -49,6 +47,19 @@ func TestCanCacheData(t *testing.T) {
 
 }
 
+func TestCachePassesErrorsFromDataSource(t *testing.T) {
+	dataSource := MakeFakeDataSource(10, true)
+	testCache := livesessiondbcache.MakeCache[User](dataSource)
+
+	keys := dataSource.GetAllKeys()
+	for _, key := range keys {
+		u, err := testCache.Get(key)
+		assert.Nil(t, u)
+		assert.NotNil(t, err)
+	}
+
+}
+
 func TestConcurrentReads(t *testing.T) {
 	testCases := []struct {
 		name          string
@@ -66,7 +77,7 @@ func TestConcurrentReads(t *testing.T) {
 
 func makeConcurrencyTest(userAmount, requestAmount int) func(t *testing.T) {
 	return func(t *testing.T) {
-		dataSource := MakeFakeDataSource(uint32(userAmount))
+		dataSource := MakeFakeDataSource(uint32(userAmount), false)
 		testCache := livesessiondbcache.MakeCache[User](dataSource)
 		keys := dataSource.GetAllKeys()
 

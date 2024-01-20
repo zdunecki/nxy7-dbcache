@@ -1,3 +1,5 @@
+// This library provides generic implementation of `Cache[T]` which can be accessed concurrently and is guaranteed to make at most
+// one call to underlying data source for any given key.
 package livesessiondbcache
 
 import (
@@ -17,13 +19,13 @@ type Cache[T any] struct {
 	// structure to guarantee that we'll only request user data once per user
 	s singleflight.Group
 
-	dataRetriever DataRetriever[T]
+	dataSource DataSource[T]
 }
 
-func MakeCache[T any](dataRetriever DataRetriever[T]) *Cache[T] {
-	var cache Cache[T]
-	cache.dataRetriever = dataRetriever
-	return &cache
+func MakeCache[T any](dataSource DataSource[T]) *Cache[T] {
+	return &Cache[T]{
+		dataSource: dataSource,
+	}
 }
 
 func (c *Cache[T]) Get(key string) (*T, error) {
@@ -34,7 +36,7 @@ func (c *Cache[T]) Get(key string) (*T, error) {
 	}
 
 	v, err, _ := c.s.Do(key, func() (any, error) {
-		val, err := c.dataRetriever.Get(key)
+		val, err := c.dataSource.Get(key)
 		if err == nil {
 			c.m.Store(key, val)
 		}
