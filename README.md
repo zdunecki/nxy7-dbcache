@@ -2,7 +2,7 @@
 This library provides generic implementation of `Cache[T]` which can be accessed concurrently and is guaranteed to make at most
 one call to underlying data source for any given key.
 
-To function correctly this cache requires `DataRetriever[T]` that implements `Get(key string) (*T, error)`.
+To function correctly this cache requires `DataSource[T]` that implements `Get(key string) (*T, error)`.
 
 ## How to run tests
 Tests can be run either with `go test . -race` or if nix is installed `nix develop . -c bash -c "go test . -race"`. Second approach would
