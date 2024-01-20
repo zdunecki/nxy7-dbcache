@@ -1,4 +1,4 @@
-module cache
+module github.com/nxy7/dbcache
 
 go 1.21.3
 

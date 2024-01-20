@@ -1,7 +1,6 @@
-package livesessiondbcache_test
+package dbcache_test
 
 import (
-	livesessiondbcache "cache"
 	"fmt"
 	"math/rand"
 	"sync"
@@ -9,7 +8,10 @@ import (
 	"time"
 
 	"github.com/go-faker/faker/v4"
+	"github.com/nxy7/dbcache"
 )
+
+var _ dbcache.DataSource[User] = &FakeDataSource{}
 
 type FakeDataSource struct {
 	m           map[string]User
@@ -18,8 +20,6 @@ type FakeDataSource struct {
 	// flag indicating whether Get calls to this source should return errors
 	shouldFail bool
 }
-
-var _ livesessiondbcache.DataSource[User] = &FakeDataSource{}
 
 func MakeFakeDataSource(userAmount uint32, shouldFail bool) *FakeDataSource {
 	f := FakeDataSource{
@@ -57,6 +57,7 @@ func (f *FakeDataSource) Get(key string) (*User, error) {
 func (f *FakeDataSource) AccessCount() int {
 	return int(f.accessCount.Load())
 }
+
 func (f *FakeDataSource) GetAllKeys() []string {
 	var keys []string
 	for k := range f.m {

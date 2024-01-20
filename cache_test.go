@@ -1,16 +1,16 @@
-package livesessiondbcache_test
+package dbcache_test
 
 import (
-	"cache"
 	"sync"
 	"testing"
 
+	"github.com/nxy7/dbcache"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestCanCacheData(t *testing.T) {
 	dataSource := MakeFakeDataSource(10, false)
-	testCache := livesessiondbcache.MakeCache[User](dataSource)
+	testCache := dbcache.MakeCache[User](dataSource)
 
 	keys := dataSource.GetAllKeys()
 	first := keys[0]
@@ -49,7 +49,7 @@ func TestCanCacheData(t *testing.T) {
 
 func TestCachePassesErrorsFromDataSource(t *testing.T) {
 	dataSource := MakeFakeDataSource(10, true)
-	testCache := livesessiondbcache.MakeCache[User](dataSource)
+	testCache := dbcache.MakeCache[User](dataSource)
 
 	keys := dataSource.GetAllKeys()
 	for _, key := range keys {
@@ -78,7 +78,7 @@ func TestConcurrentReads(t *testing.T) {
 func makeConcurrencyTest(userAmount, requestAmount int) func(t *testing.T) {
 	return func(t *testing.T) {
 		dataSource := MakeFakeDataSource(uint32(userAmount), false)
-		testCache := livesessiondbcache.MakeCache[User](dataSource)
+		testCache := dbcache.MakeCache[User](dataSource)
 		keys := dataSource.GetAllKeys()
 
 		var wg sync.WaitGroup

@@ -1,6 +1,6 @@
 // This library provides generic implementation of `Cache[T]` which can be accessed concurrently and is guaranteed to make at most
 // one call to underlying data source for any given key.
-package livesessiondbcache
+package dbcache
 
 import (
 	"sync"
