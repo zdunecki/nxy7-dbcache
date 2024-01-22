@@ -69,6 +69,7 @@ func TestConcurrentReads(t *testing.T) {
 		{"requested test case", 100, 10},
 		{"big amount of users", 10000, 10},
 		{"big amount of requests", 10, 10000},
+		{"big amount of users and requests", 1000, 10000},
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, makeConcurrencyTest(testCase.userAmount, testCase.requestAmount))
